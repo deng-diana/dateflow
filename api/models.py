@@ -1,11 +1,22 @@
-from  datetime import date, datetime
+from  datetime import date, datetime, timezone
 from sqlmodel import Field, SQLModel
 
-class Task(SQLModel, table=True):
-    id: int | None=Field(default=None, primary_key=True)
-    title: str
+class TaskBase(SQLModel):
+    title:str
     date:date
-    done: bool=False
-    created_at:datetime=Field(default_factory=datetime.utcnow)
+    done:bool=False
 
-    
+
+class Task(TaskBase, table=True):
+    id: int | None=Field(default=None, primary_key=True)
+    created_at:datetime=Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class TaskCreate(TaskBase):
+     """What the client sends. No id, no created_at."""
+     pass
+
+class TaskUpdate(SQLModel):
+     """Every field optional: send only what changes."""
+     title: str| None=None
+     date: date| None=None
+     done: bool | None = None
