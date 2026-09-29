@@ -39,7 +39,15 @@ export default function TaskList({ initialTasks }: { initialTasks: Task[] }) {
     });
     if (!res.ok) return;
     const created: Task = await res.json();
-    setTasks((prev) => [...prev, created]);
+    setTasks((prev) =>
+      [...prev, created].sort((a, b) => a.date.localeCompare(b.date)),
+    );
+  }
+
+  async function remove(task: Task) {
+    const res = await fetch(`${API}/tasks/${task.id}`, { method: "DELETE" });
+    if (!res.ok) return;
+    setTasks((prev) => prev.filter((t) => t.id !== task.id));
   }
 
   return (
@@ -55,12 +63,18 @@ export default function TaskList({ initialTasks }: { initialTasks: Task[] }) {
           name="date"
           type="date"
           required
+          defaultValue={new Date().toISOString().slice(0, 10)}
           className="rounded border bg-transparent px-2"
         />
         <button type="submit" className="rounded bg-white px-4 py-2 text-black">
           Add
         </button>
       </form>
+      {tasks.length === 0 && (
+        <p className="mt-6 text-center text-sm opacity-50">
+          No tasks yet. Add one above.
+        </p>
+      )}
       <ul className="mt-4 space-y-2">
         {tasks.map((task) => (
           <li
@@ -76,6 +90,12 @@ export default function TaskList({ initialTasks }: { initialTasks: Task[] }) {
               {task.title}
             </span>
             <span className="ml-auto text-sm opacity-60">{task.date}</span>
+            <button
+              onClick={() => remove(task)}
+              className="text-sm opacity-40 hover:opacity-100"
+            >
+              x
+            </button>
           </li>
         ))}
       </ul>
