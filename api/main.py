@@ -1,9 +1,14 @@
 # DateFlow API. Health check first; task routes come next.
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from db import init_db, engine
 from sqlmodel import Session, select
-from models import Task, TaskCreate, TaskUpdate # noqa: F401  (registers the Task table before create_all)
+
+from db import engine, init_db
+from models import (
+    Task,
+    TaskCreate,
+    TaskUpdate,
+)
 
 app=FastAPI(title="DateFlow API")
 

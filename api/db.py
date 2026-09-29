@@ -1,5 +1,6 @@
 # Database connection. Creates tables on startup for now; migrations come later.
 import os
+
 from sqlmodel import SQLModel, create_engine
 
 DATABASE_URL = os.environ.get(

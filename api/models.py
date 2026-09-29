@@ -1,5 +1,8 @@
-from  datetime import date as Date, datetime, timezone
+from datetime import date as Date
+from datetime import datetime, timezone
+
 from sqlmodel import Field, SQLModel
+
 
 class TaskBase(SQLModel):
     title:str
@@ -13,7 +16,6 @@ class Task(TaskBase, table=True):
 
 class TaskCreate(TaskBase):
      """What the client sends. No id, no created_at."""
-     pass
 
 class TaskUpdate(SQLModel):
      """Every field optional: send only what changes."""
