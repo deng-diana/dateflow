@@ -1,9 +1,9 @@
-from  datetime import date, datetime, timezone
+from  datetime import date as Date, datetime, timezone
 from sqlmodel import Field, SQLModel
 
 class TaskBase(SQLModel):
     title:str
-    date:date
+    date:Date
     done:bool=False
 
 
@@ -18,5 +18,5 @@ class TaskCreate(TaskBase):
 class TaskUpdate(SQLModel):
      """Every field optional: send only what changes."""
      title: str| None=None
-     date: date| None=None
+     date: Date| None=None
      done: bool | None = None

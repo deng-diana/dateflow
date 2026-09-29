@@ -1,10 +1,10 @@
 // Home page: shows today's tasks. Hardcoded for now; the API comes later.
-
+import { SERVER_API } from "@/lib/api";
 import TaskList, { type Task } from "@/components/TaskList";
 
 async function getTasks(): Promise<Task[]> {
   try {
-    const res = await fetch("http:localhost:8000/tasks", { cache: "no-store" });
+    const res = await fetch(`${SERVER_API}/tasks`, { cache: "no-store" });
     if (!res.ok) return [];
     return res.json();
   } catch {
@@ -14,7 +14,7 @@ async function getTasks(): Promise<Task[]> {
 
 async function getHealth(): Promise<boolean> {
   try {
-    const res = await fetch("http://localhost:8000/health", {
+    const res = await fetch(`${SERVER_API}/health`, {
       cache: "no-store",
     });
     const data = await res.json();

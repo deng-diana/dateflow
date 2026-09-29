@@ -1,6 +1,6 @@
 "use client";
 // Interactive task list. Runs in the browser so it can handle clicks.
-
+import { BROWSER_API as API } from "@/lib/api";
 import { useState } from "react";
 export type Task = {
   id: number;
@@ -9,8 +9,6 @@ export type Task = {
   done: boolean;
   created_at: string;
 };
-
-const API = "http://localhost:8000";
 
 export default function TaskList({ initialTasks }: { initialTasks: Task[] }) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
