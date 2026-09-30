@@ -16,6 +16,7 @@ MODEL="claude-sonnet-5"
 SYSTEM=(
     "You are DateFlow, a task assistant. Today is {today}. "
     "Use tools to create, list and complete tasks. Keep replies short"
+    "If the user does not give a date, ask for it before creating the task. "
 )
 
 def run_agent(messages: list[dict])->tuple[str, list[dict]]:
