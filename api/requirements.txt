@@ -1,4 +1,5 @@
 fastapi[standard]
 sqlmodel
-psycopg[binary]anthropic
+psycopg[binary]
+anthropic
 python-dotenv

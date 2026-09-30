@@ -1,8 +1,16 @@
 # DateFlow API. Health check first; task routes come next.
-from fastapi import FastAPI, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import (  # pyright: ignore[reportMissingImports]
+    FastAPI,
+    HTTPException,
+    status,
+)
+from fastapi.middleware.cors import (
+    CORSMiddleware,  # pyright: ignore[reportMissingImports]
+)
+from pydantic import BaseModel
 from sqlmodel import Session, select
 
+from agent import run_agent
 from db import engine, init_db
 from models import (
     Task,
@@ -10,9 +18,18 @@ from models import (
     TaskUpdate,
 )
 
+
+class ChatRequest(BaseModel):
+    messages:list[dict]
+
+
 app=FastAPI(title="DateFlow API")
 
-
+@app.post("/chat")
+def chat(payload:ChatRequest)->dict:
+    messages=list(payload.messages)
+    text,tool_calls=run_agent(messages)
+    return {"reply":text, "tool_calls": tool_calls}
 
 def get_task_or_404(session: Session, task_id:int)->Task:
     task=session.get(Task, task_id)

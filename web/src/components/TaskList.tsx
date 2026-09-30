@@ -2,6 +2,7 @@
 // Interactive task list. Runs in the browser so it can handle clicks.
 import { BROWSER_API as API } from "@/lib/api";
 import { useState } from "react";
+import Chat from "@/components/Chat";
 export type Task = {
   id: number;
   title: string;
@@ -47,7 +48,10 @@ export default function TaskList({ initialTasks }: { initialTasks: Task[] }) {
     if (!res.ok) return;
     setTasks((prev) => prev.filter((t) => t.id !== task.id));
   }
-
+  async function reload() {
+    const res = await fetch(`${API}/tasks`);
+    if (res.ok) setTasks(await res.json());
+  }
   return (
     <div>
       <form action={addTask} className="mt-4 flex gap-2">
@@ -97,6 +101,7 @@ export default function TaskList({ initialTasks }: { initialTasks: Task[] }) {
           </li>
         ))}
       </ul>
+      <Chat onTasksChanged={reload} />
     </div>
   );
 }

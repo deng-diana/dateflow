@@ -1,6 +1,7 @@
 # Tools the agent can call. Each has a JSON description for the model
 # and a Python function that actually does the work.
 from datetime import date as Date
+
 from sqlmodel import Session, select
 
 from db import engine
