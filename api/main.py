@@ -10,27 +10,49 @@ from fastapi.middleware.cors import (
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
-from agent import run_agent
+from agent import extract_memory, run_agent
 from db import engine, init_db
-from models import (
-    Task,
-    TaskCreate,
-    TaskUpdate,
-)
-
-
-class ChatRequest(BaseModel):
-    messages:list[dict]
-
+from models import Memory, Message, Task, TaskCreate, TaskUpdate
 
 app=FastAPI(title="DateFlow API")
+class ChatRequest(BaseModel):
+    text:str
+
+@app.get("/messages")
+def list_messages()->list[Message]:
+    with Session(engine) as session:
+        return session.exec(select(Message).order_by(Message.id)).all()
+
 
 @app.post("/chat")
 def chat(payload:ChatRequest)->dict:
-    messages=list(payload.messages)
-    text,tool_calls=run_agent(messages)
+    with Session(engine) as session:
+        memories=[m.content for m in session.exec(select(Memory)).all()]
+        history=session.exec(select(Message).order_by(Message.id)).all()
+        messages=[{"role":m.role, "content":m.content} for m in history]
+        messages.append({"role": "user", "content": payload.text})
+        text,tool_calls=run_agent(messages, memories)
+        session.add(Message(role="user", content=payload.text))
+        session.add(Message(role="assistant", content=text))
+        if new :=extract_memory(payload.text, text):
+            session.add(Memory(content=new))
+        session.commit()
     return {"reply":text, "tool_calls": tool_calls}
 
+@app.get("/memories")
+def list_memories()->list[Memory]:
+    with Session(engine) as session:
+        return session.exec(select(Memory).order_by(Memory.id)).all()
+
+@app.delete("/memories/{memory_id}",status_code=204)
+def delete_memory(memory_id:int) ->None:
+    with Session(engine) as session:
+        m=session.get(Memory,memory_id)
+        if m is None:
+            raise HTTPException(status_code=404, detail="Memory not found")
+        session.delete(m)
+        session.commit()
+        
 def get_task_or_404(session: Session, task_id:int)->Task:
     task=session.get(Task, task_id)
     if task is None:

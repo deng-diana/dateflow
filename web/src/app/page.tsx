@@ -1,10 +1,21 @@
 // Home page: shows today's tasks. Hardcoded for now; the API comes later.
 import { SERVER_API } from "@/lib/api";
 import TaskList, { type Task } from "@/components/TaskList";
+import { type Message } from "@/components/Chat";
 
 async function getTasks(): Promise<Task[]> {
   try {
     const res = await fetch(`${SERVER_API}/tasks`, { cache: "no-store" });
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
+}
+
+async function getMessages(): Promise<Message[]> {
+  try {
+    const res = await fetch(`${SERVER_API}/messages`, { cache: "no-store" });
     if (!res.ok) return [];
     return res.json();
   } catch {
@@ -27,13 +38,14 @@ async function getHealth(): Promise<boolean> {
 export default async function Home() {
   const apiOk = await getHealth();
   const tasks = await getTasks();
+  const messages = await getMessages();
   return (
     <main className="mx-auto max-w-md p-6">
       <h1 className="text-2xl font-semibold">DateFlow</h1>
       <p className="mt-1 text-sm opacity-60">
         API:{apiOk ? "online" : "offline"}
       </p>
-      <TaskList initialTasks={tasks} />
+      <TaskList initialTasks={tasks} initialMessages={messages} />
     </main>
   );
 }

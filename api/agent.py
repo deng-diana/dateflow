@@ -15,18 +15,38 @@ MODEL="claude-sonnet-5"
 
 SYSTEM=(
     "You are DateFlow, a task assistant. Today is {today}. "
-    "Use tools to create, list and complete tasks. Keep replies short"
+    "Use tools to create, list and complete tasks. Keep replies short. "
     "If the user does not give a date, ask for it before creating the task. "
 )
 
-def run_agent(messages: list[dict])->tuple[str, list[dict]]:
-    """ Run one turn. Returns (final_text, tool_calls_made)."""
+EXTRACT_PROMPT=(
+    "Below is one exchange between a user and a task assistant. "
+    "If it reveals a lasting fact or preference about the user that would help "
+    "in future conversations, reply with that fact in one short sentence. "
+    "If nothing is worth remembering, reply with exactly: NONE"
+)
+
+
+def extract_memory(user_text:str, assistant_text:str)->str|None:
+    """Ask the model whether this exchange contains something worth remembering."""
+    response=client.messages.create(
+        model=MODEL,
+        max_tokens=100,
+        system=EXTRACT_PROMPT,
+        messages=[{"role":"user", "content":f"User:{user_text}\nAssistant:{assistant_text}"}]
+    )
+    text= "".join(b.text for b in response.content if b.type=="text").strip()
+    return None if text=="NONE" or not text else text
+
+def run_agent(messages: list[dict], memories:list[str])->tuple[str, list[dict]]:
+    memory_block="\n".join(f"- {m}" for m in memories) or "- (none yet)"
+    system=SYSTEM.format(today=datetime.now(timezone.utc).date().isoformat())+f"\n\nWhat you remember about the user\n{memory_block}"
     tool_calls: list[dict]=[]
     while True:
         response=client.messages.create(
             model=MODEL,
             max_tokens=1024,
-            system=SYSTEM.format(today=datetime.now(timezone.utc).date().isoformat()),
+            system=system,
             tools=TOOLS,
             messages=messages,
         )

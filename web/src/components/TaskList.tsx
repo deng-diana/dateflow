@@ -2,7 +2,7 @@
 // Interactive task list. Runs in the browser so it can handle clicks.
 import { BROWSER_API as API } from "@/lib/api";
 import { useState } from "react";
-import Chat from "@/components/Chat";
+import Chat, { type Message } from "@/components/Chat";
 export type Task = {
   id: number;
   title: string;
@@ -11,7 +11,13 @@ export type Task = {
   created_at: string;
 };
 
-export default function TaskList({ initialTasks }: { initialTasks: Task[] }) {
+export default function TaskList({
+  initialTasks,
+  initialMessages,
+}: {
+  initialTasks: Task[];
+  initialMessages: Message[];
+}) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
   async function toggle(task: Task) {
@@ -101,7 +107,7 @@ export default function TaskList({ initialTasks }: { initialTasks: Task[] }) {
           </li>
         ))}
       </ul>
-      <Chat onTasksChanged={reload} />
+      <Chat initialMessages={initialMessages} onTasksChanged={reload} />
     </div>
   );
 }

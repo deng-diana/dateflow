@@ -4,15 +4,17 @@
 import { useState } from "react";
 import { BROWSER_API as API } from "@/lib/api";
 
-type Message = { role: "user" | "assistant"; content: string };
+export type Message = { role: "user" | "assistant"; content: string };
 type ToolCall = { name: string; input: Record<string, unknown> };
 
 export default function Chat({
+  initialMessages,
   onTasksChanged,
 }: {
+  initialMessages: Message[];
   onTasksChanged: () => void;
 }) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [toolCalls, setToolCalls] = useState<ToolCall[]>([]);
   const [busy, setBusy] = useState(false);
 
@@ -26,13 +28,20 @@ export default function Chat({
       const res = await fetch(`${API}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next }),
+        body: JSON.stringify({ text }),
       });
 
       const data = await res.json();
+      if (!res.ok) {
+        setMessages([
+          ...next,
+          { role: "assistant", content: `Error: ${data.detail ?? res.status}` },
+        ]);
+        return;
+      }
       setMessages([...next, { role: "assistant", content: data.reply }]);
-      setToolCalls(data.tool_calls);
-      if (data.tool_calls.length > 0) onTasksChanged();
+      setToolCalls(data.tool_calls ?? []);
+      if ((data.tool_calls ?? []).length > 0) onTasksChanged();
     } finally {
       setBusy(false);
     }

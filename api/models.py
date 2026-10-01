@@ -22,3 +22,15 @@ class TaskUpdate(SQLModel):
      title: str| None=None
      date: Date| None=None
      done: bool | None = None
+
+class Message(SQLModel, table=True):
+    id:int | None=Field(default=None, primary_key=True)
+    role:str
+    content:str
+    created_at:datetime=Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class Memory(SQLModel, table=True):
+    id:int | None=Field(default=None, primary_key=True)
+    content:str
+    created_at:datetime=Field(default_factory=lambda:datetime.now(timezone.utc))
