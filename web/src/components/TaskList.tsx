@@ -4,6 +4,7 @@ import { BROWSER_API as API } from "@/lib/api";
 import { useState } from "react";
 import Chat, { type Message } from "@/components/Chat";
 import Memories, { type Memory } from "@/components/Memories";
+import WeekView from "@/components/WeekView";
 export type Task = {
   id: number;
   title: string;
@@ -86,6 +87,7 @@ export default function TaskList({
           No tasks yet. Add one above.
         </p>
       )}
+      <WeekView tasks={tasks} />
       <ul className="mt-4 space-y-2">
         {tasks.map((task) => (
           <li
