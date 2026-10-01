@@ -34,7 +34,7 @@ def chat(payload:ChatRequest)->dict:
         text,tool_calls=run_agent(messages, memories)
         session.add(Message(role="user", content=payload.text))
         session.add(Message(role="assistant", content=text))
-        if new :=extract_memory(payload.text, text):
+        if new :=extract_memory(payload.text, text, memories):
             session.add(Memory(content=new))
         session.commit()
     return {"reply":text, "tool_calls": tool_calls}

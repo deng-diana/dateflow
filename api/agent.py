@@ -20,20 +20,21 @@ SYSTEM=(
 )
 
 EXTRACT_PROMPT=(
-    "Below is one exchange between a user and a task assistant. "
-    "If it reveals a lasting fact or preference about the user that would help "
-    "in future conversations, reply with that fact in one short sentence. "
-    "If nothing is worth remembering, reply with exactly: NONE"
+    "Below is one exchange between a user and a task assistant, plus what is "
+    "already remembered about the user. If the exchange reveals a NEW lasting "
+    "fact or preference not already covered, reply with it in one short sentence. "
+    "If nothing new is worth remembering, reply with exactly: NONE"
 )
 
 
-def extract_memory(user_text:str, assistant_text:str)->str|None:
+def extract_memory(user_text:str, assistant_text:str, existing:list[str])->str|None:
     """Ask the model whether this exchange contains something worth remembering."""
+    known="\n".join(f"- {m}"for m in existing or "- (nothing yet)")
     response=client.messages.create(
         model=MODEL,
         max_tokens=100,
         system=EXTRACT_PROMPT,
-        messages=[{"role":"user", "content":f"User:{user_text}\nAssistant:{assistant_text}"}]
+        messages=[{"role":"user", "content":f"Already remembered:\n{known}\n\nUser:{user_text}\nAssistant:{assistant_text}"}]
     )
     text= "".join(b.text for b in response.content if b.type=="text").strip()
     return None if text=="NONE" or not text else text
