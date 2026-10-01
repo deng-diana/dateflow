@@ -3,6 +3,7 @@
 import { BROWSER_API as API } from "@/lib/api";
 import { useState } from "react";
 import Chat, { type Message } from "@/components/Chat";
+import Memories, { type Memory } from "@/components/Memories";
 export type Task = {
   id: number;
   title: string;
@@ -14,9 +15,11 @@ export type Task = {
 export default function TaskList({
   initialTasks,
   initialMessages,
+  initialMemories,
 }: {
   initialTasks: Task[];
   initialMessages: Message[];
+  initialMemories: Memory[];
 }) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
@@ -87,7 +90,7 @@ export default function TaskList({
         {tasks.map((task) => (
           <li
             key={task.id}
-            className="flex items-center gap-3 rounder border p-3"
+            className="flex items-center gap-3 rounded border p-3"
           >
             <input
               type="checkbox"
@@ -108,6 +111,7 @@ export default function TaskList({
         ))}
       </ul>
       <Chat initialMessages={initialMessages} onTasksChanged={reload} />
+      <Memories initialMemories={initialMemories} />
     </div>
   );
 }
