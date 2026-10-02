@@ -67,7 +67,7 @@ def on_startup():
 # Allow the Next.js dev server to call this API from the browser.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:3001"],
+    allow_origins=["http://localhost:3000", "http://localhost:3001", "https://dateflow-lake.vercel.app"],
     allow_methods=["*"],
     allow_headers=["*"]
 )
