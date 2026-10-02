@@ -3,18 +3,21 @@
 
 import { useState } from "react";
 import { BROWSER_API as API } from "@/lib/api";
+import type { Message } from "@/lib/types";
 
-export type Message = { role: "user" | "assistant"; content: string };
+// The panel only needs role and content; saved messages also carry id/created_at.
+type ChatMessage = Pick<Message, "role" | "content">;
+
 type ToolCall = { name: string; input: Record<string, unknown> };
 
 export default function Chat({
   initialMessages,
   onTasksChanged,
 }: {
-  initialMessages: Message[];
+  initialMessages: ChatMessage[];
   onTasksChanged: () => void;
 }) {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [toolCalls, setToolCalls] = useState<ToolCall[]>([]);
   const [busy, setBusy] = useState(false);
 

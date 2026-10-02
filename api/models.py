@@ -25,7 +25,7 @@ class TaskUpdate(SQLModel):
 
 class Message(SQLModel, table=True):
     id:int | None=Field(default=None, primary_key=True)
-    role:str
+    role: str = Field(schema_extra={"json_schema_extra": {"enum": ["user", "assistant"]}})
     content:str
     created_at:datetime=Field(default_factory=lambda: datetime.now(timezone.utc))
 

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { BROWSER_API as API } from "@/lib/api";
-export type Memory = { id: number; content: string; created_at: string };
+import type { Memory } from "@/lib/types";
 export default function Memories({
   initialMemories,
 }: {

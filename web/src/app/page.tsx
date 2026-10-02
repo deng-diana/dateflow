@@ -1,8 +1,7 @@
 // Home page: shows today's tasks. Hardcoded for now; the API comes later.
 import { SERVER_API } from "@/lib/api";
-import TaskList, { type Task } from "@/components/TaskList";
-import { type Message } from "@/components/Chat";
-import Memories, { type Memory } from "@/components/Memories";
+import TaskList from "@/components/TaskList";
+import type { Task, Message, Memory } from "@/lib/types";
 async function getTasks(): Promise<Task[]> {
   try {
     const res = await fetch(`${SERVER_API}/tasks`, { cache: "no-store" });

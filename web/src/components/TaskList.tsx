@@ -2,16 +2,10 @@
 // Interactive task list. Runs in the browser so it can handle clicks.
 import { BROWSER_API as API } from "@/lib/api";
 import { useState } from "react";
-import Chat, { type Message } from "@/components/Chat";
-import Memories, { type Memory } from "@/components/Memories";
+import Chat from "@/components/Chat";
+import Memories from "@/components/Memories";
+import type { Task, Message, Memory } from "@/lib/types";
 import WeekView from "@/components/WeekView";
-export type Task = {
-  id: number;
-  title: string;
-  date: string;
-  done: boolean;
-  created_at: string;
-};
 
 export default function TaskList({
   initialTasks,

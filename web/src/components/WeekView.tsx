@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { addDays, addWeeks, format, isToday, startOfWeek } from "date-fns";
-import type { Task } from "@/components/TaskList";
+import type { Task } from "@/lib/types";
 
 export default function WeekView({ tasks }: { tasks: Task[] }) {
   const [offset, setOffset] = useState(0); // 0 = this week, -1 = last week...
